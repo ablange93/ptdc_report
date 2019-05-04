@@ -42,17 +42,18 @@ elif len(sys.argv) <= 4:
         # print(sales)
 
         # generate product_qtys list
-        # DID NOT FACTOR IN QUANTITES IN EACH SALE
+        # DID NOT FACTOR IN LOT SIZE IN EACH SALE
         product_qtys = []
         for i in range(len(products)):
             product_id = products[i][0]
+            lot_size = int(products[i][3])
             product_qty = 0
             for sale in sales:
                 if sale[1] == product_id:
-                    qty_sold = sale[3]
-                    product_qty = int(qty_sold) + product_qty
+                    qty_sold = int(sale[3])
+                    product_qty = (qty_sold * lot_size) + product_qty
             product_qtys.append(product_qty)
-        # print(product_qtys)
+        print(product_qtys)
 
         # generate product_revenues list
         product_revenues = []
