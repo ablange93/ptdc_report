@@ -31,7 +31,20 @@ def calc_gross_revenue(products, total_units_list):
 		gross_revenue = total_units_list[i] * float(products[i][2])
 		gross_revenue_list.append(gross_revenue)
 	return gross_revenue_list
-	
+
+
+def create_report(products, gross_revenue_list, total_units_list):
+	with open('ProductReport.csv', 'w') as product_report:
+		print("writing to .csv file...")
+		report_writer = csv.writer(product_report, delimiter=',')
+		headers = ['Name', 'GrossRevenue', 'TotalUnits']
+		report_writer.writerow(headers)
+		for i in range(len(products)):
+			product_name = products[i][1]
+			revenue = gross_revenue_list[i]
+			units = total_units_list[i]
+			report_writer.writerow([product_name, revenue, units])	
+
 
 if len(sys.argv) == 1:
     if sys.argv[0] == "test_sql_task.py":
@@ -74,9 +87,16 @@ elif len(sys.argv) <= 4:
         # calculate gross_revenue
         GROSS_REVENUE_LIST = calc_gross_revenue(PRODUCTS, TOTAL_UNITS_LIST)
         
-#         print(TOTAL_UNITS_LIST)
-#         print("\n")
-#         print(GROSS_REVENUE_LIST)
+        create_report(PRODUCTS, TOTAL_UNITS_LIST, GROSS_REVENUE_LIST)
 else:
     print("Too many parameters entered.\nPlease try again or type" \
           + " 'python -m sql_task' for help.")
+
+
+# import csv
+# 
+# with open('employee_file.csv', mode='w') as employee_file:
+#     employee_writer = csv.writer(employee_file, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
+# 
+#     employee_writer.writerow(['John Smith', 'Accounting', 'November'])
+#     employee_writer.writerow(['Erica Meyers', 'IT', 'March'])
