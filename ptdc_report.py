@@ -2,30 +2,35 @@ import sys
 import csv
 
 
-def load_products(products_filename):
-	products = []
-	with open (products_filename, 'r') as products_csv:
-		product_reader = csv.reader(products_csv, delimiter=',')
-		for product in product_reader:
-			products.append(product)
-	return products
+def csv_loader(csv_filename):
+	rows = []
+	with open (csv_filename, 'r') as csv_file:
+		csv_reader = csv.reader(csv_file, delimiter=',')
+		for row in csv_reader:
+			rows.append(row)
+	return rows
 
 
-def load_sales(sales_filename):
-	sales = []
-	with open(sales_filename, 'r') as sales_csv:
-		sale_reader = csv.reader(sales_csv, delimiter=',')
-		for sale in sale_reader:
-			sales.append(sale)
-	return sales
+def calc_total_units(products, sales):
+	total_units_list = []
+	for i in range(len(products)):
+		product_id = products[i][0]
+		lot_size = int(products[i][3])
+		total_units = 0
+		for sale in sales:
+			if sale[1] == product_id:
+				qty_sold = int(sale[3])
+				total_units = (qty_sold * lot_size) + total_units
+		total_units_list.append(total_units)
+	return total_units_list
 
 
-def calc_total_units():
-	pass
-
-
-def calc_total_revenue():
-	pass
+def calc_gross_revenue(products, total_units_list):
+	gross_revenue_list = []
+	for i in range(len(products)):
+		gross_revenue = total_units_list[i] * float(products[i][2])
+		gross_revenue_list.append(gross_revenue)
+	return gross_revenue_list
 	
 
 if len(sys.argv) == 1:
@@ -58,39 +63,20 @@ elif len(sys.argv) <= 4:
             else:
                 print("Parameter " + str(param) + " not recognized. " \
                       + "Please try again or type 'python -m sql_task' for help.")
-        products = load_products(PRODUCTS_FILENAME)
-        sales = load_sales(SALES_FILENAME)
-#         sales = []
-#         with open(sales_filename, 'r') as sales_csv:
-#             sale_reader = csv.reader(sales_csv, delimiter=',')
-#             for sale in sale_reader:
-#                 sales.append(sale)
-        # print(products)
-        # print(sales)
-
-        # generate product_qtys list
-        product_qtys = []
-        for i in range(len(products)):
-            product_id = products[i][0]
-            lot_size = int(products[i][3])
-            product_qty = 0
-            for sale in sales:
-                if sale[1] == product_id:
-                    qty_sold = int(sale[3])
-                    product_qty = (qty_sold * lot_size) + product_qty
-            product_qtys.append(product_qty)
-        print(product_qtys)
-
-        # generate product_revenues list
-        product_revenues = []
-        for i in range(len(products)):
-            # revenue = qty * price
-            product_revenue = product_qtys[i] * float(products[i][2])
-            product_revenues.append(product_revenue)
-        print(product_revenues)
-
-
-
+        
+        # load products & sales from .csv files
+        PRODUCTS = csv_loader(PRODUCTS_FILENAME)
+        SALES = csv_loader(SALES_FILENAME)
+        
+        # calculate total_units
+        TOTAL_UNITS_LIST = calc_total_units(PRODUCTS, SALES)
+        
+        # calculate gross_revenue
+        GROSS_REVENUE_LIST = calc_gross_revenue(PRODUCTS, TOTAL_UNITS_LIST)
+        
+#         print(TOTAL_UNITS_LIST)
+#         print("\n")
+#         print(GROSS_REVENUE_LIST)
 else:
     print("Too many parameters entered.\nPlease try again or type" \
           + " 'python -m sql_task' for help.")
