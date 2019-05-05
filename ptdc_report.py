@@ -48,45 +48,39 @@ def create_report(products, gross_revenue_list, total_units_list):
 
 if len(sys.argv) == 1:
     if sys.argv[0] == "test_sql_task.py":
-        # don't print if you're running unit tests
         pass
     else:
-        # no command line arguments returns help section
         print("""
 Usage:
-	$ python -m ptdc_report [csv_in_A] [csv_in_B] [csv_out] 	
-
-Options:
+	$ python -m ptdc_report [sales_csv_in] [product_master_csv_in] [product_report_out]	
+	
+	Example:
+		$ python -m ptdc_report Sales.csv ProductMaster.csv ProductReport.csv
 	
     """)
 elif len(sys.argv) <= 4:
+		# load parameters
         for param in sys.argv:
             if "ptdc_report" in param:
                 pass
-
             elif param == "Sales.csv":
                 SALES_FILENAME = param
-
             elif param == "ProductMaster.csv":
                 PRODUCTS_FILENAME = param
-
             elif param == "ProductReport.csv":
                 pass
-
             else:
                 print("Parameter " + str(param) + " not recognized. " \
                       + "Please try again or type 'python -m sql_task' for help.")
-        
+
         # load products & sales from .csv files
         PRODUCTS = csv_loader(PRODUCTS_FILENAME)
         SALES = csv_loader(SALES_FILENAME)
         
-        # calculate total_units
+        # calculate total_units & gross_revenue
         TOTAL_UNITS_LIST = calc_total_units(PRODUCTS, SALES)
-        
-        # calculate gross_revenue
         GROSS_REVENUE_LIST = calc_gross_revenue(PRODUCTS, TOTAL_UNITS_LIST)
-        
+    
         create_report(PRODUCTS, TOTAL_UNITS_LIST, GROSS_REVENUE_LIST)
 else:
     print("Too many parameters entered.\nPlease try again or type" \
